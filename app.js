@@ -1,33 +1,25 @@
-const http = require('http');
-/*how you import files in nodejs. 
-Either takes a path or http needs to start with ./ or /
-if you don't import anything with ./ or / and just type in a name you end
-up looking for a global module in this case you access nodes http module*/
+//I use a clean version of this file anytime the comments get too clutered
+const path = require('path');
 
+const express = require('express');
+const bodyParser = require('body-parser');
 
-// function rqListener(req, res) {
+const errorController = require('./controllers/error');
 
-// }
-//http.createServer(rqListener);
-//create server is self explanitory however the createServer
-/*function takes in two arguments the incoming request and the response
- */
+const app = express();
 
-const routes = require('./route');
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
-// const server = http.createServer((req, res) => {
-//     console.log(req.url, req.method, req.headers);
-//     /*req or request sends back a full report of a request however we don't need all
-//     of that information just a few. You can seperate req and let it only report certain things such as
-//     the url, method, and the response headers */
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
-// }); // you can also just use a fat arrow function and save it within a const 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// const express = require('express'); // exports a function named e(express) to use the express middleware
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
 
-// const app = exppress();
+app.use(errorController.get404);
 
-const server = http.createServer(routes);
-
-server.listen(3000); //starts a process to listen (wait) for incoming request
-//WARNING!! In production you usually don't fill it out but for this example we need to make it local
+app.listen(3000);
